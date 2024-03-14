@@ -1,5 +1,3 @@
-from IPython.display import Audio
-
 import numpy as np
 
 import scipy.signal as signal
@@ -7,13 +5,7 @@ from scipy.io import loadmat
 
 import matplotlib
 import matplotlib.pyplot as plt
-
-for backend in ("QtAgg", "WebAgg"):
-    try:
-        matplotlib.use(backend)
-        break
-    except:
-        pass
+import matplotlib.gridspec as gridspec
 matplotlib.style.use('fast')
 
 # load the file
@@ -28,10 +20,6 @@ except FileNotFoundError:
 glassclip = matfile['glassclip']
 srate = matfile['srate'][0][0]
 
-# play the music!
-
-Audio(np.array(glassclip[:, 0]), rate=srate)
-
 # some variables for convenience
 
 pnts = len(glassclip)
@@ -39,25 +27,29 @@ timevec = np.arange(0, pnts)/srate
 
 # setup graph
 
-fig, (p1, p2, p3) = plt.subplots(3, 1)
+fig = plt.figure(tight_layout=True)
+gs = gridspec.GridSpec(2, 2)
 
 # draw the time-domain signals
 
+p1 = fig.add_subplot(gs[0, 0])
+p1.set_xlabel('Time (s)')
 p1.plot(timevec, glassclip)
-# p1.xlabel('Time (s)')
-# plt.show()
+plt.show(block=False)
 
 # inspect the power spectrum
 
-hz = np.linspace(0, srate/2, int(np.floor(len(glassclip)/2)+1))
-powr = abs(np.fft.fft(glassclip[:, 0])/pnts)
+hz = np.linspace(0, srate / 2, int(np.floor(len(glassclip) / 2) + 1))
+powr = abs(np.fft.fft(glassclip[:, 0]) / pnts)
 
-p2.plot(hz, powr[:len(hz)])
+p2 = fig.add_subplot(gs[1, 0])
 p2.set_xlim([100, 2000])
 p2.set_ylim([0, np.max(powr)])
-# p2.xlabel('Frequency (Hz)')
-# p2.ylabel('Amplitude')
-# plt.show()
+p2.set_xlabel('Frequency (Hz)')
+p2.set_ylabel('Amplitude')
+
+p2.plot(hz, powr[:len(hz)])
+plt.show(block=False)
 
 # pick frequencies to filter
 
@@ -79,31 +71,19 @@ filtglass[:, 1] = signal.filtfilt(fkern, 1, glassclip[:, 1])
 
 powrF = abs(np.fft.fft(filtglass[:, 0])/pnts)
 
-# plt.plot(hz, powr[:len(hz)])
 p2.plot(hz, powrF[:len(hz)], 'r')
-p2.set_xlim([100, 2000])
-p2.set_ylim([0, np.max(powr)])
-# p2.xlabel('Frequency (Hz)')
-# p2.ylabel('Amplitude')
-# plt.show()
+plt.show(block=False)
 
 # plot the time-frequency response
 
 frex, time, tf = signal.spectrogram(
     glassclip[:, 0], window=('tukey', .25), fs=srate, noverlap=100)
 
+p3 = fig.add_subplot(gs[:, 1])
+p3.set_ylim([0, 2000])
+p3.set_xlabel('Time (s)')
+p3.set_ylabel('Frequency (Hz)')
 p3.plot([timevec[0], timevec[-1]], [frange[0], frange[0]], 'w:')
 p3.plot([timevec[0], timevec[-1]], [frange[1], frange[1]], 'w:')
 p3.pcolormesh(time, frex, np.log(tf), vmin=-20, vmax=-10)
-p3.set_ylim([0, 2000])
-# p3.xlabel('Time (s)')
-# p3.ylabel('Frequency (Hz)')
-
-# display all plots
-
-plt.show()
-
-
-# Play the filtered signal!
-
-Audio(np.array(filtglass[:, 0]), rate=srate)
+plt.show(block=True)
