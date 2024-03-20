@@ -19,13 +19,13 @@ def main():
     # Median filtering
     # Threshold and window size are adjusted by looking at the histogram of the
     # dirty and clean signals
-    cleaned = median_filter(signal, threshold=5, k=5)
+    cleaned = median_filter(signal, threshold=5, k=10)
     plt.figure()
     plt.hist(signal, 100)
     plt.hist(cleaned, 100)
 
     # Smoothing
-    k = 150
+    k = 200
     w = (2 * k + 1)
 
     # Gaussian smoothing
@@ -45,9 +45,11 @@ def main():
 
     # Mean smoothing
     # mean = np.convolve(cleaned, np.ones(w)/w, mode='same')
-    mean = np.zeros(count)
-    for i in range(k, count - k):
-        mean[i] = np.mean(cleaned[i - k:i + k + 1])
+    mean = cleaned.copy()  # np.zeros(count)
+    for i in range(count):
+        beg = max(0, i - k)
+        end = min(i + k + 1, count)
+        mean[i] = np.mean(cleaned[beg:end])
 
     # Final plot
     fig, (ax1, ax2, ax3) = plt.subplots(3, 1)
@@ -72,20 +74,20 @@ def main():
     plt.show()
 
 
-def median_filter(input, k, threshold):
-    output = input.copy()
+def median_filter(s_in, k, threshold):
+    s_out = s_in.copy()
 
     # find data values above the threshold
-    over_threshold = np.where(abs(input) > threshold)[0]
+    over_threshold = np.where(abs(s_in) > threshold)[0]
 
     for i in over_threshold:
         # lower and upper bounds
         beg = max(0, i - k)
-        end = min(i + k, len(input)) + 1
+        end = min(i + k + 1, len(s_in))
         # compute median of surrounding points
-        output[i] = np.median(input[beg:end])
+        s_out[i] = np.median(s_in[beg:end])
 
-    return output
+    return s_out
 
 
 def gauss_kernel(k, fwhm, sample_rate=1):
