@@ -54,6 +54,7 @@ def main():
     # Final plot
     location = "right"
 
+    plt.figure("Signals")
     plt.subplot(3, 1, 1)
     plt.plot(signal, label="signal")
     plt.plot(cleaned, label="cleaned")
