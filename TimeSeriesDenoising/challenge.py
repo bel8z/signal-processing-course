@@ -52,24 +52,26 @@ def main():
         mean[i] = np.mean(cleaned[beg:end])
 
     # Final plot
-    fig, (ax1, ax2, ax3) = plt.subplots(3, 1)
-    loc = "right"
+    location = "right"
 
-    ax1.plot(signal, label="signal")
-    ax1.plot(cleaned, label="cleaned")
-    ax1.plot(solution, label="solution")
-    ax1.legend(loc=loc)
+    plt.subplot(3, 1, 1)
+    plt.plot(signal, label="signal")
+    plt.plot(cleaned, label="cleaned")
+    plt.plot(solution, label="solution")
+    plt.legend(loc=location)
 
-    ax2.plot(gauss_conv, label="gauss_conv")
-    ax2.plot(gauss_loop, label="gauss_loop")
-    ax2.plot(mean, label="mean")
-    ax2.plot(solution, label="solution")
-    ax2.legend(loc=loc)
+    plt.subplot(3, 1, 2)
+    plt.plot(gauss_conv, label="gauss_conv")
+    plt.plot(gauss_loop, label="gauss_loop")
+    plt.plot(mean, label="mean")
+    plt.plot(solution, label="solution")
+    plt.legend(loc=location)
 
-    ax3.plot(gauss_conv - solution, label="gauss_conv")
-    ax3.plot(gauss_loop - solution, label="gauss_loop")
-    ax3.plot(mean - solution, label="mean")
-    ax3.legend(loc=loc)
+    plt.subplot(3, 1, 3)
+    plt.plot(gauss_conv - solution, label="gauss_conv")
+    plt.plot(gauss_loop - solution, label="gauss_loop")
+    plt.plot(mean - solution, label="mean")
+    plt.legend(loc=location)
 
     plt.show()
 
