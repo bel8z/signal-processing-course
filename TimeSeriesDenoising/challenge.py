@@ -96,7 +96,7 @@ def median_filter(s_in, k, threshold):
 def gauss_kernel(k, fwhm, sample_rate=1):
     freq = 1 / sample_rate
     # normalized time vector
-    time = np.arange(-k, k+1) * freq
+    time = np.arange(-k, k + 1) * freq
     # create normalized Gaussian window
     weight = np.exp(- (4 * np.log(2) * time ** 2) / fwhm ** 2)
     return (time, weight / np.sum(weight))
