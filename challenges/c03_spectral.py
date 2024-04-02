@@ -19,32 +19,44 @@ srate = data["srate"][0][0]
 
 plt.figure("Signal")
 plt.plot(time, signal)
-plt.show()
 
 # %%
-# create Hann window
-winsize = int(2 * srate)  # 2-second window
-hannw = .5 - np.cos(2 * np.pi * np.linspace(0, 1, winsize)) / 2
+n = len(signal)
 
-# number of FFT points (frequency resolution)
-nfft = winsize
+# compute window size and overlap
+winlen = 1  # seconds
+winsize = int(winlen * srate)
+overlap = winsize // 2  # half window
 
-f, welchpow = welch(signal, fs=srate, window=hannw,
-                    nperseg=winsize, noverlap=winsize / 4, nfft=nfft)
+# window onset times
+onsets = np.arange(0, n - winsize, winsize - overlap)
 
-spectrum = 2 * np.abs(fft(signal, nfft)) / nfft
-spec_power = np.abs(fft(signal, nfft))**2
+# compute frequency (Hz) vector based on window size
+hz = np.linspace(0, srate * 0.5, winsize // 2 + 1)
+
+# Hann window
+hannw = 0.5 * (1 - np.cos(2 * np.pi * np.linspace(0, 1, winsize)))
+plt.figure("Hann window")
+plt.plot(hannw)
 
 # %%
-plt.figure("FFT")
-plt.plot(f, spectrum[0:len(f)])
-plt.show()
+# initialize the power matrix (windows x frequencies)
+matrix = np.zeros((len(onsets), len(hz)))
 
-plt.figure("Welch")
-plt.semilogy(f, welchpow)
-plt.semilogy(f, spec_power[0:len(f)])
-# plt.xlim([0, 40])
-plt.xlabel('frequency [Hz]')
-plt.ylabel('Power')
-plt.show()
+# loop over frequencies
+for wi in range(0, len(onsets)):
+    chunk = signal[onsets[wi]:][0: winsize]
+
+    # apply Hann taper to data
+    chunk = chunk * hannw
+
+    # compute its spectrum
+    matrix[wi] = np.abs(fft(chunk)[0:len(hz)]) ** 2
+
+
+# %%
+t = np. linspace(time[0], time[-1], len(onsets))
+plt.figure()
+plt.pcolormesh(hz, t, matrix)
+
 # %%
