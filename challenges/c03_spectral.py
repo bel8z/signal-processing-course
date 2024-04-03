@@ -4,7 +4,7 @@ import scipy as sp
 import numpy as np
 from scipy.signal import detrend, welch, spectrogram
 from scipy.fftpack import fft, ifft
-# %matplotlib widget
+%matplotlib widget
 
 # %%
 # Load and plot data
@@ -13,15 +13,15 @@ try:
 except:
     data = sp.io.loadmat("spectral/spectral_codeChallenge.mat")
 
-signal = data["signal"][0]
-time = data["time"][0]
+series = np.array([data["time"][0],
+                   data["signal"][0]])
 srate = data["srate"][0][0]
 
 plt.figure("Signal")
-plt.plot(time, signal)
+plt.plot(series[0], series[1])
 
 # %%
-n = len(signal)
+n = len(series[1])
 
 # compute window size and overlap
 winlen = 0.5  # seconds
@@ -47,7 +47,7 @@ matrix = np.zeros((len(onsets), len(hz)))
 
 # loop over frequencies
 for wi in range(0, len(onsets)):
-    chunk = signal[onsets[wi]:][0: winsize]
+    chunk = series[1][onsets[wi]:][0: winsize]
 
     # apply Hann taper to data
     chunk = chunk * hannw
@@ -57,8 +57,8 @@ for wi in range(0, len(onsets)):
 
 
 # %%
-t = np. linspace(time[0], time[-1], len(onsets))
-plt.figure()
+t = np. linspace(series[0][0], series[0][-1], len(onsets))
+plt.figure("Spectrogram")
 plt.pcolormesh(t, hz, matrix.T, cmap="hot")
 plt.ylim([0, 40])
 
