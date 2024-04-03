@@ -4,7 +4,7 @@ import scipy as sp
 import numpy as np
 from scipy.signal import detrend, welch, spectrogram
 from scipy.fftpack import fft, ifft
-%matplotlib widget
+# %matplotlib widget
 
 # %%
 # Load and plot data
@@ -24,15 +24,12 @@ plt.plot(time, signal)
 n = len(signal)
 
 # compute window size and overlap
-winlen = 1  # seconds
+winlen = 0.5  # seconds
 winsize = int(winlen * srate)
-overlap = winsize // 2  # half window
+overlap = 0  # winsize // 2  # half window
 
 # window onset times
 onsets = np.arange(0, n - winsize, winsize - overlap)
-
-# compute frequency (Hz) vector based on window size
-hz = np.linspace(0, srate * 0.5, winsize // 2 + 1)
 
 # Hann window
 hannw = 0.5 * (1 - np.cos(2 * np.pi * np.linspace(0, 1, winsize)))
@@ -40,6 +37,11 @@ plt.figure("Hann window")
 plt.plot(hannw)
 
 # %%
+nfft = winsize * 2
+
+# compute frequency (Hz) vector based on window size
+hz = np.linspace(0, srate * 0.5, nfft // 2 + 1)
+
 # initialize the power matrix (windows x frequencies)
 matrix = np.zeros((len(onsets), len(hz)))
 
@@ -51,12 +53,14 @@ for wi in range(0, len(onsets)):
     chunk = chunk * hannw
 
     # compute its spectrum
-    matrix[wi] = np.abs(fft(chunk)[0:len(hz)]) ** 2
+    matrix[wi] = np.abs(fft(chunk, n=nfft)[0:len(hz)]) ** 2
 
 
 # %%
 t = np. linspace(time[0], time[-1], len(onsets))
 plt.figure()
-plt.pcolormesh(hz, t, matrix)
+plt.pcolormesh(t, hz, matrix.T, cmap="hot")
+plt.ylim([0, 40])
 
 # %%
+plt.show()
