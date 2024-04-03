@@ -29,3 +29,11 @@
 * Does a very high sampling frequency produce artifacts (harmonic distortion)?
 * What is an **Hamm window**?
 * How to interpret the FFT output? How does it relate to number of samples, sampling rate and Nyquist frequency?
+
+# 4. Complex numbers 1h
+* Geometrical representation of complex numbers
+* Sin/Cos representation
+* Why FFT results are complex? How they relate to the frequency components?
+* Significance and representation of complex multiplication and division
+
+# 5. Filtering 
