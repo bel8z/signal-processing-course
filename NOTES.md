@@ -37,3 +37,39 @@
 * Significance and representation of complex multiplication and division
 
 # 5. Filtering 
+
+# 6.
+
+# 7.
+
+# 8.
+
+# 9.
+
+# 10.
+
+# 11.
+
+# 12.
+
+# 13. Resources
+
+* https://en.wikipedia.org/wiki/Fourier_transform
+* https://en.wikipedia.org/wiki/Discrete_Fourier_transform
+* https://en.wikipedia.org/wiki/Oversampling
+* https://en.wikipedia.org/wiki/Upsampling
+* https://en.wikipedia.org/wiki/Supersampling
+* https://en.wikipedia.org/wiki/Undersampling
+* https://en.wikipedia.org/wiki/Spectral_density
+* https://www.luisllamas.es/en/fftsharp/
+
+## Video
+* https://www.youtube.com/watch?v=Ls7AvuZG4kI
+* https://www.youtube.com/watch?v=T647CGsuOVU
+
+## Code 
+* https://github.com/swharden/FftSharp/tree/main
+* https://github.com/andrewkirillov/AForge.NET/blob/master/Sources/Math/FourierTransform.cs
+* https://github.com/Samson-Mano/Fast_Fourier_Transform/tree/main
+* https://www.mathdotnet.com
+* https://github.com/mathnet/mathnet-numerics
