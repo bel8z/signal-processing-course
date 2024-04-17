@@ -29,6 +29,7 @@
 * Does a very high sampling frequency produce artifacts (harmonic distortion)?
 * What is an **Hamm window**?
 * How to interpret the FFT output? How does it relate to number of samples, sampling rate and Nyquist frequency?
+* Difference between spectrum, power spectrum, spectral density
 
 # 4. Complex numbers 1h
 * Geometrical representation of complex numbers
@@ -36,9 +37,22 @@
 * Why FFT results are complex? How they relate to the frequency components?
 * Significance and representation of complex multiplication and division
 
-# 5. Filtering 
+# 5. Filtering 5h
+* Use FIR for more stability, at the expense of processing resources
+* IIR filters are smaller and faster, but less stable
+* Evaluate ALL filters based on the actual filter outcome
+* Evaluate FIR filters inspecting the kernel in both time and frequency domains
+* Evaluate IIR filters inspecting the impulse response, in both domains
+* FIRLS is more flexible, FIR1 gives good frequency transitions by default
+* Zero-phase-shifting is obtained by filtering forward, than backward, then inverting the output again
+* Use reflection (of filter kernel size) to reduce edge effects (especially useful for zero phase)
+* **When is window-sinc actually useful?**
+* **How to choose the order of FIR/IIR filters?**
+* **How to choose the frequency transition for filtering? Is it related to roll-off?**
 
-# 6.
+# 6. Convolution 1h
+* **does applying a kernel filter using convolution instead of filtfilt produce similar (or same) results?**
+
 
 # 7.
 
@@ -62,6 +76,7 @@
 * https://en.wikipedia.org/wiki/Undersampling
 * https://en.wikipedia.org/wiki/Spectral_density
 * https://www.luisllamas.es/en/fftsharp/
+* https://it.mathworks.com/help/signal/filter-design.html
 
 ## Video
 * https://www.youtube.com/watch?v=Ls7AvuZG4kI
