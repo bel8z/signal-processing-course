@@ -76,7 +76,10 @@
 * https://en.wikipedia.org/wiki/Undersampling
 * https://en.wikipedia.org/wiki/Spectral_density
 * https://www.luisllamas.es/en/fftsharp/
+* https://it.mathworks.com/matlabcentral/fileexchange/106725-fourier-analysis
+* https://it.mathworks.com/help/signal/ug/power-spectral-density-estimates-using-fft.html
 * https://it.mathworks.com/help/signal/filter-design.html
+* https://dsp.stackexchange.com/questions/71278/can-fft-convolution-be-faster-than-direct-convolution-for-signals-of-large-sizes
 
 ## Video
 * https://www.youtube.com/watch?v=Ls7AvuZG4kI
@@ -88,3 +91,4 @@
 * https://github.com/Samson-Mano/Fast_Fourier_Transform/tree/main
 * https://www.mathdotnet.com
 * https://github.com/mathnet/mathnet-numerics
+* https://numpy.org/doc/stable/reference/generated/numpy.fft.rfft.html
