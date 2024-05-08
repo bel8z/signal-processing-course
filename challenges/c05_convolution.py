@@ -5,6 +5,8 @@ import scipy as sp
 import matplotlib.pyplot as plt
 from scipy.fftpack import fft, ifft
 
+import util
+
 
 def main():
     # Load and plot data
@@ -60,33 +62,13 @@ def main():
 
     plt.figure("Spectra")
     plt.subplot(2, 1, 1)
-    plt.plot(freq, amplitude(k_x)[:len(freq)])
+    plt.plot(freq, util.amplitude(k_x)[:len(freq)])
     plt.subplot(2, 1, 2)
-    plt.plot(freq, amplitude(filter_x)[:len(freq)])
-    plt.plot(freq, amplitude(cleaned_x)[:len(freq)])
+    plt.plot(freq, util.amplitude(filter_x)[:len(freq)])
+    plt.plot(freq, util.amplitude(cleaned_x)[:len(freq)])
     plt.xlabel("Frequency (normalized)")
 
     plt.show()
-
-
-def amplitude(spectrum):
-    return abs(spectrum) * 2 / len(spectrum)
-
-
-def median_filter(s_in, k, threshold):
-    s_out = s_in.copy()
-
-    # find data values above the threshold
-    over_threshold = np.where(abs(s_in) > threshold)[0]
-
-    for i in over_threshold:
-        # lower and upper bounds
-        beg = max(0, i - k)
-        end = min(i + k + 1, len(s_in))
-        # compute median of surrounding points
-        s_out[i] = np.median(s_in[beg:end])
-
-    return s_out
 
 
 # Usual business

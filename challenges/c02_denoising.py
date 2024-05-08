@@ -4,6 +4,8 @@ import numpy as np
 import scipy as sp
 import matplotlib.pyplot as plt
 
+import util
+
 
 def main():
     # Load and plot data
@@ -19,7 +21,7 @@ def main():
     # Median filtering
     # Threshold and window size are adjusted by looking at the histogram of the
     # dirty and clean signals
-    cleaned = median_filter(signal, threshold=5, k=10)
+    cleaned = util.median_filter(signal, threshold=5, k=10)
     plt.figure()
     plt.hist(signal, 100)
     plt.hist(cleaned, 100)
@@ -30,7 +32,7 @@ def main():
 
     # Gaussian smoothing
     fwhm = w / 3  # ≃ 2.355 / 6
-    gt, gw = gauss_kernel(k, fwhm)
+    gt, gw = util.gauss_kernel(k, fwhm)
     assert len(gw) == w
 
     plt.figure("Gaussian kernel")
@@ -75,31 +77,6 @@ def main():
     plt.legend(loc=location)
 
     plt.show()
-
-
-def median_filter(s_in, k, threshold):
-    s_out = s_in.copy()
-
-    # find data values above the threshold
-    over_threshold = np.where(abs(s_in) > threshold)[0]
-
-    for i in over_threshold:
-        # lower and upper bounds
-        beg = max(0, i - k)
-        end = min(i + k + 1, len(s_in))
-        # compute median of surrounding points
-        s_out[i] = np.median(s_in[beg:end])
-
-    return s_out
-
-
-def gauss_kernel(k, fwhm, sample_rate=1):
-    freq = 1 / sample_rate
-    # normalized time vector
-    time = np.arange(-k, k + 1) * freq
-    # create normalized Gaussian window
-    weight = np.exp(- (4 * np.log(2) * time ** 2) / fwhm ** 2)
-    return (time, weight / np.sum(weight))
 
 
 # Usual business
