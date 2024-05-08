@@ -58,7 +58,7 @@ plt.title('Morlet wavelet in time domain')
 
 # frequency-domain plotting
 plt.subplot(422)
-plt.plot(hz, MorletWaveletPow[:len(hz)], 'k')
+plt.plot(hz, MorletWaveletPow, 'k')
 plt.xlim([0, freq * 3])
 plt.xlabel('Frequency (Hz)')
 plt.title('Morlet wavelet in frequency domain')
@@ -79,7 +79,7 @@ plt.title('Haar wavelet in time domain')
 
 # frequency-domain plotting
 plt.subplot(424)
-plt.plot(hz, HaarWaveletPow[:len(hz)], 'k')
+plt.plot(hz, HaarWaveletPow, 'k')
 plt.xlim([0, freq * 3])
 plt.xlabel('Frequency (Hz)')
 plt.title('Haar wavelet in frequency domain')
@@ -99,7 +99,7 @@ plt.title('Mexican wavelet in time domain')
 
 # frequency-domain plotting
 plt.subplot(426)
-plt.plot(hz, MexicanPow[:len(hz)], 'k')
+plt.plot(hz, MexicanPow, 'k')
 plt.xlim([0, freq * 3])
 plt.xlabel('Frequency (Hz)')
 plt.title('Mexican wavelet in frequency domain')
@@ -124,7 +124,7 @@ plt.title('DoG wavelet in time domain')
 
 # frequency-domain plotting
 plt.subplot(428)
-plt.plot(hz, DoGPow[:len(hz)], 'k')
+plt.plot(hz, DoGPow, 'k')
 plt.xlim([0, freq * 3])
 plt.xlabel('Frequency (Hz)')
 plt.title('DoG wavelet in frequency domain')
@@ -200,10 +200,10 @@ plt.legend()
 
 # spectra of convolved signals
 plt.subplot(212)
-plt.plot(hz, morewaveAmp[:len(hz)], label='Morlet')
-plt.plot(hz, haarwaveAmp[:len(hz)], label='Haar')
-plt.plot(hz, mexiwaveAmp[:len(hz)], label='Mexican')
-plt.plot(hz, dogswaveAmp[:len(hz)], label='DoG')
+plt.plot(hz, morewaveAmp, label='Morlet')
+plt.plot(hz, haarwaveAmp, label='Haar')
+plt.plot(hz, mexiwaveAmp, label='Mexican')
+plt.plot(hz, dogswaveAmp, label='DoG')
 plt.yscale('log')
 plt.xlim([0, 40])
 plt.legend()
@@ -234,7 +234,7 @@ plt.xlabel('Time (s)')
 # in the frequency domain
 signalX = util.amplitude(fft(signal1))
 plt.subplot(212)
-plt.plot(hz, signalX[:len(hz)], 'k')
+plt.plot(hz, signalX, 'k')
 plt.xlim([1, srate / 6])
 plt.ylim([0, 300])
 plt.xlabel('Frequency (Hz)')
@@ -274,6 +274,7 @@ plt.show()
 # %%
 # now for convolution
 
+# using scipy here because wavelet is longer than signal and numpy swaps the arrays
 convres = scipy.signal.convolve(signal1, wav, 'same')
 
 assert len(signal1) == len(time)
@@ -286,7 +287,7 @@ plt.plot(time, convres, 'r')
 # and in the frequency domain
 plt.subplot(212)
 convresX = util.amplitude(fft(convres))
-plt.plot(hz, convresX[:len(hz)], 'r')
+plt.plot(hz, convresX, 'r')
 plt.show()
 
 # Time-domain wavelet normalization is... annoying and difficult.
@@ -323,8 +324,8 @@ plt.show()
 
 # frequency domain
 convresX = util.amplitude(fft(convres))
-plt.plot(hz, signalX[:len(hz)], 'k', label='original')
-plt.plot(hz, convresX[:len(hz)], 'b', label='filtered, norm.')
+plt.plot(hz, signalX, 'k', label='original')
+plt.plot(hz, convresX, 'b', label='filtered, norm.')
 plt.ylim([0, 300])
 plt.xlim([0, 90])
 plt.show()

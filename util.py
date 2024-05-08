@@ -32,9 +32,29 @@ def gauss_kernel(k, fwhm, sample_rate=1):
     return (time, weight / np.sum(weight))
 
 
-def amplitude(spectrum, spectrum_len=-1):
-    spectrum_len = spectrum_len if spectrum_len > 0 else len(spectrum)
-    return abs(spectrum) * 2 / spectrum_len
+def amplitude(ft):
+    '''
+    Compute amplitude spectrum from the given fourier transform
+    Only the positive portion of the spectrum is returned (from DC to Nyquist)
+    '''
+    ftlen = len(ft)
+    xlen = ftlen // 2 + 1
+
+    norm = 1 / ftlen
+
+    scale = np.ones(xlen) * norm * 2
+    scale[0] = norm  # DC component is not doubled
+
+    return abs(ft)[:xlen] * scale
+
+
+def power(ft, db=False):
+    '''
+    Compute power spectrum from the given fourier transform
+    Only the positive portion of the spectrum is returned (from DC to Nyquist)
+    '''
+    amp = amplitude(ft)
+    return (20 * np.log10(amp)) if (db) else (amp ** 2)
 
 
 def freqvec(nyquist_freq, spectrum_len):

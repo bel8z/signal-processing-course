@@ -80,10 +80,12 @@
 * https://it.mathworks.com/help/signal/ug/power-spectral-density-estimates-using-fft.html
 * https://it.mathworks.com/help/signal/filter-design.html
 * https://dsp.stackexchange.com/questions/71278/can-fft-convolution-be-faster-than-direct-convolution-for-signals-of-large-sizes
+* https://www.biorxiv.org/node/120256.full
 
 ## Video
 * https://www.youtube.com/watch?v=Ls7AvuZG4kI
 * https://www.youtube.com/watch?v=T647CGsuOVU
+* https://www.youtube.com/watch?v=7ahrcB5HL0k
 
 ## Code 
 * https://github.com/swharden/FftSharp/tree/main
