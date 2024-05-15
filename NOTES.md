@@ -23,7 +23,7 @@
 * **Brownian noise** with cumsum(randn)
 * Average multiple series for denoising
 
-# 3. Spectral analysis 3.3h
+# 3. Spectral analysis 3:30h
 
 * How **zero padding** is useful to FFT?
 * Does a very high sampling frequency produce artifacts (harmonic distortion)?
@@ -54,17 +54,24 @@
 * **does applying a kernel filter using convolution instead of filtfilt produce similar (or same) results?**
 
 
-# 7.
+# 7. Wavelet 2h
 
-# 8.
+# 8. Resampling 3h
+* Upsample requires interpolation (typically a spline)
+* When downsampling, low pass filter at the new nyquist (anti-aliasing)
+* If the downsampling ratio is not an integer, compute a resampling ratio to first upsample, then downsample
+* Linear interpolation is not that bad comparing to spline (especially in the freq domain)
+* In case of an irregular signal, resample at higher frequency; the quality of interpolation depends on how the lowest average Nyquist of the irregular sampling relates to the frequency of the original sequences i.e. if it is too low the result is aliased
+* Linear extrapolation is more conservative and stable
+* Spectral interpolation: fft a window before and after the data hole, average the spectra, ifft and **detrend** because we are adding an artificial trend line to "stitch" to the original signal. This is more a "speculative" reconstruction of the data
 
-# 9.
+# 9. Outlier detection
 
-# 10.
+# 10. Feature detection
 
-# 11.
+# 11. Variability
 
-# 12.
+# 12. Bonus
 
 # 13. Resources
 
