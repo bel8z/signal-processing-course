@@ -66,6 +66,11 @@
 * Spectral interpolation: fft a window before and after the data hole, average the spectra, ifft and **detrend** because we are adding an artificial trend line to "stitch" to the original signal. This is more a "speculative" reconstruction of the data
 
 # 9. Outlier detection
+* A threshold based on mean and standard deviation is good for detecting outlier
+* If the signal has a trend, either detrend and apply a global threshold or apply a local threshold by computing mean and std in moving windows
+* Local std threshold is good for outlier points, not so for outlier windows
+* RMS is good for identifying window, but again a threshold must be selected for the resulting RMS signal; this can be done visually or again applying local thresholds
+* **check difference between mean and RMS**
 
 # 10. Feature detection
 

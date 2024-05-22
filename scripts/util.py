@@ -7,6 +7,28 @@ from scipy.fftpack import fft, ifft
 from scipy.signal import detrend, welch
 
 
+def find_min(x):
+    transitions = np.diff(np.sign(np.diff(x)))
+    min_i = np.where(transitions > 0)
+    # TODO: Is squeeze necessary
+    return 1 + np.squeeze(min_i)
+
+
+def find_max(x):
+    transitions = np.diff(np.sign(np.diff(x)))
+    max_i = np.where(transitions < 0)
+    # TODO: Is squeeze necessary
+    return 1 + np.squeeze(max_i)
+
+
+def find_min_max(x):
+    transitions = np.diff(np.sign(np.diff(x)))
+    min_i = np.where(transitions > 0)
+    max_i = np.where(transitions < 0)
+    # TODO: Is squeeze necessary
+    return (1 + np.squeeze(min_i), 1 + np.squeeze(max_i))
+
+
 def median_filter(s_in, k, threshold):
     s_out = s_in.copy()
 
@@ -79,8 +101,7 @@ class wavelet:
         sample_time = sample_time if sample_time > 0 else np.diff(timevec)[0]
         wave = np.zeros(len(timevec))
         wave[np.argmin(timevec**2): np.argmin((timevec - .5)**2)] = 1
-        wave[np.argmin((timevec - .5)**2)
-                       : np.argmin((timevec - 1 - sample_time)**2)] = -1
+        wave[np.argmin((timevec - .5)**2)             : np.argmin((timevec - 1 - sample_time)**2)] = -1
         return wave
 
     @staticmethod
