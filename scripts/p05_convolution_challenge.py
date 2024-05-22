@@ -22,7 +22,7 @@ def main():
     # Median filtering
     # Threshold and window size are adjusted by looking at the histogram of the
     # dirty and clean signals
-    cleaned = median_filter(signal, threshold=5, k=10)
+    cleaned = util.median_filter(signal, threshold=5, k=10)
     plt.figure("Histograms")
     plt.hist(signal, 100)
     plt.hist(cleaned, 100)
