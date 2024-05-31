@@ -1,11 +1,13 @@
 # %%
 import numpy as np
-import matplotlib.pyplot as plt
+
 import scipy
 from scipy import signal
 import scipy.io as sio
 from scipy.interpolate import griddata
-import copy
+
+import matplotlib.pyplot as plt
+
 import util
 
 # %% [markdown]
@@ -31,7 +33,8 @@ signal1[randpnts] = np.random.rand(
 plt.plot(time, signal1, 'ks-')
 
 # auto-threshold based on mean and standard deviation
-threshold = np.mean(signal1) + 3 * np.std(signal1)
+avg, std = util.avg_std(signal1)
+threshold = avg + 3 * std
 plt.plot([time[0], time[-1]], [threshold, threshold], 'b--')
 plt.show()
 
@@ -83,18 +86,16 @@ time = np.arange(0, N) / N
 
 
 # plot it
-plt.plot(time, forex)
+plt.figure("Forex")
 plt.xlabel('Time (year)')
 plt.ylabel('EUR/USD')
 
 # add global thresholds
-threshup = np.mean(forex) + 3 * np.std(forex)
-threshdn = np.mean(forex) - 3 * np.std(forex)
-plt.plot(range(0, N), forex, 'b', label='EUR/USD')
-plt.plot([0, N], [threshup, threshup], 'r--', label='M+3std')
-plt.plot([0, N], [threshdn, threshdn], 'k--', label='M-3std')
-plt.legend()
-plt.show()
+avg, std = util.avg_std(forex)
+threshmax = avg + 3 * std
+threshmin = avg - 3 * std
+plt.plot([time[0], time[-1]], [threshmax, threshmax], 'r--', label='M+3std')
+plt.plot([time[0], time[-1]], [threshmin, threshmin], 'k--', label='M-3std')
 
 # %%
 # local threshold
@@ -106,30 +107,17 @@ pct_win = 5  # in percent, not proportion!
 k = int(len(forex) * (pct_win / 2 / 100))
 
 # initialize statistics time series to be the global stats
-mean_ts = np.ones(len(time)) * np.mean(forex)
-std3_ts = np.ones(len(time)) * np.std(forex)
-
-
-# loop over time points
-for i in range(0, N):
-
-    # boundaries
-    lo_bnd = np.max((0, i - k))
-    hi_bnd = np.min((i + k, N))
-
-    # compute local mean and std
-    mean_ts[i] = np.mean(forex[range(lo_bnd, hi_bnd)])
-    std3_ts[i] = 3 * np.std(forex[range(lo_bnd, hi_bnd)])
-
+avg_ts, std_ts = util.avg_std(forex, k)
+threshmax = avg_ts + 3 * std_ts
+threshmin = avg_ts - 3 * std_ts
 
 # compute local outliers
-outliers = (forex > mean_ts + std3_ts) | (forex < mean_ts - std3_ts)
-
+outliers = (forex > threshmax) | (forex < threshmin)
 
 # plotting...
-plt.plot(time, forex, 'k', label='EUR/USD')
-plt.plot(time, mean_ts + std3_ts, 'm--', label='Mean +/- 3std')
-plt.plot(time, mean_ts - std3_ts, 'm--')
+plt.plot(time, forex, 'k')
+plt.plot(time, threshmax, 'm--', label='M±3std local')
+plt.plot(time, threshmin, 'm--')
 
 # and plot those
 plt.plot(time[outliers], forex[outliers], 'ro', label='Outliers')
@@ -162,14 +150,8 @@ signal1 = signal1 + np.random.randn(n)
 signal1[200:221] = signal1[200:221] + np.random.randn(21) * 9
 signal1[1500:1601] = signal1[1500:1601] + np.random.randn(101) * 9
 
-
-# plot
-plt.plot(signal1)
-plt.show()
-
-
 # %%
-# detect bad segments using sliding RMS
+# detect bad segments using sliding std
 
 # window size as percent of total signal length
 pct_win = 2  # in percent, not proportion!
@@ -177,45 +159,29 @@ pct_win = 2  # in percent, not proportion!
 # convert to indices
 k = int(n * (pct_win / 2 / 100))
 
-# initialize RMS time series vector
-rms_ts = np.zeros(n)
-std_ts = np.zeros(n)
+# compute sliding average and std deviation
+avg_ts, std_ts = util.avg_std(signal1, k)
 
-for ti in range(0, n):
+# pick threshold inspecting the std deviation plot
+avg, std = util.avg_std(std_ts)
+threshmax = avg + std
+threshmin = avg - std
 
-    # boundary points
-    low_bnd = int(np.max((0, ti - k)))
-    upp_bnd = int(np.min((n, ti + k)))
+plt.figure("Bad segments detection")
 
-    # signal segment (and mean-center!)
-    tmpsig = signal1[range(low_bnd, upp_bnd)]
-
-    std_ts[ti] = np.std(tmpsig)
-
-    tmpsig = tmpsig - np.mean(tmpsig)
-
-    # compute RMS in this window
-    rms_ts[ti] = np.sqrt(np.mean(tmpsig**2))
-
-
-# plot RMS
-plt.plot(rms_ts, 's-', label='Local RMS')
+plt.subplot(2, 1, 1)
 plt.plot(std_ts, 's-', label='Local STD')
-
-
-# pick threshold manually based on visual inspection
-thresh = 15
-plt.plot([0, n], [thresh, thresh], 'r', label='Threshold')
+plt.plot([0, n], [threshmax, threshmax], 'r', label='Threshold')
+plt.plot([0, n], [threshmin, threshmin], 'r')
 plt.legend()
-plt.show()
-
 
 # mark bad regions in original time series
-signalR = copy.deepcopy(signal1)
-signalR[rms_ts > thresh] = np.nan
+signalR = signal1.copy()
+signalR[std_ts > threshmax] = np.nan
 
-
+plt.subplot(2, 1, 2)
 plt.plot(signal1, 'b', label='Original')
 plt.plot(signalR, 'r', label='Thresholded')
 plt.legend()
+
 plt.show()

@@ -45,6 +45,52 @@ def median_filter(s_in, k, threshold):
     return s_out
 
 
+def avg_std(x, k=-1):
+    n = len(x)
+    k = min(k, n) if k > 0 else n
+
+    if (k < n):
+        avg = np.zeros(n)
+        std = np.zeros(n)
+
+        # loop over time points
+        for i in range(0, n):
+            # boundaries
+            beg = max(0, i - k)
+            end = min(i + k + 1, n)
+
+            # compute local mean and std
+            sig = x[beg: end]
+            avg[i] = np.mean(sig)
+            std[i] = np.std(sig)
+
+        return (avg, std)
+
+    return (np.mean(x), np.std(x))
+
+
+def rms(x, k=-1):
+    n = len(x)
+    k = min(k, n) if k > 0 else n
+
+    if (k < n):
+        ms = np.zeros(n)
+
+        # loop over time points
+        for i in range(0, n):
+            # boundaries
+            beg = max(0, i - k)
+            end = min(i + k + 1, n)
+
+            # compute local mean and std
+            sig = x[beg: end]
+            ms[i] = np.mean(sig**2)
+    else:
+        ms = np.mean(x**2)
+
+    return np.sqrt(ms)
+
+
 def gauss_kernel(k, fwhm, sample_rate=1):
     freq = 1 / sample_rate
     # normalized time vector
@@ -81,6 +127,10 @@ def power(ft, db=False):
 
 def freqvec(nyquist_freq, spectrum_len):
     return np.linspace(0, nyquist_freq, int(np.floor(spectrum_len / 2) + 1))
+
+
+def hann_window(win_len):
+    return 0.5 * (1 - np.cos(2 * np.pi * np.linspace(0, 1, int(win_len))))
 
 
 class wavelet:

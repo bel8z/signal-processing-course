@@ -10,6 +10,8 @@ from scipy.signal import detrend, welch, spectrogram
 
 from IPython.display import Audio
 
+import util
+
 
 # %% [markdown]
 #
@@ -23,8 +25,7 @@ from IPython.display import Audio
 
 # simulation parameters
 srate = 1234  # in Hz
-npnts = srate * 2  # 2 seconds
-time = np.arange(0, npnts) / srate
+time = np.arange(0, srate * 2) / srate  # 2 seconds
 
 # frequencies to include
 frex = [12, 18, 30]
@@ -39,30 +40,33 @@ for fi in range(0, len(frex)):
 signal = signal + np.random.randn(len(signal))
 
 # amplitude spectrum via Fourier transform
-signalX = scipy.fftpack.fft(signal)
-signalAmp = 2 * np.abs(signalX) / npnts
+signalX = fft(signal)
+signalAmp = util.amplitude(signalX)
 
 # vector of frequencies in Hz
-hz = np.linspace(0, srate / 2, int(np.floor(npnts / 2) + 1))
+hz = util.freqvec(0.5 * srate, len(time))
 
 
 # %%
 # plots
 
+plt.figure()
+
+plt.subplot(1, 2, 1)
 plt.plot(time, signal, label='Original')
 plt.plot(time, np.real(ifft(signalX)), 'ro', label='IFFT reconstructed')
-
 plt.xlabel('Time (s)')
 plt.ylabel('Amplitude')
 plt.title('Time domain')
 plt.legend()
-plt.show()
 
+plt.subplot(1, 2, 2)
 plt.stem(hz, signalAmp[0:len(hz)], 'k')
 plt.xlim([0, np.max(frex) * 3])
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Amplitude')
 plt.title('Frequency domain')
+
 plt.show()
 
 
@@ -79,18 +83,22 @@ N = len(searchdata)
 searchdata = searchdata - np.mean(searchdata)
 
 # power
-searchpow = np.abs(fft(searchdata) / N)**2
-hz = np.linspace(0, 52, N)
+searchpow = util.power(fft(searchdata))
+hz = util.freqvec(52, N)
 
+plt.figure()
+
+plt.subplot(1, 2, 1)
 plt.plot(searchdata, 'ko-')
 plt.xlabel('Time (weeks)')
 plt.ylabel('Search volume')
-plt.show()
 
+plt.subplot(1, 2, 2)
 plt.plot(hz, searchpow, 'ms-')
 plt.xlabel('Frequency (norm.)')
 plt.ylabel('Search power')
 plt.xlim([0, 12])
+
 plt.show()
 
 
@@ -100,6 +108,8 @@ plt.show()
 # # VIDEO: Welch's method
 # ---
 #
+
+plt.figure("Welch")
 
 # %%
 # load data and extract
@@ -116,19 +126,18 @@ N = len(eegdata)
 timevec = np.arange(0, N) / srate
 
 # plot the data
+plt.subplot(1, 3, 1)
 plt.plot(timevec, eegdata, 'k')
 plt.xlabel('Time (seconds)')
 plt.ylabel('Voltage (\muV)')
-plt.show()
 
 
 # %%
 # one big FFT (not Welch's method)
 
 # "static" FFT over entire period, for comparison with Welch
-eegpow = np.abs(fft(eegdata) / N)**2
-hz = np.linspace(0, srate / 2, int(np.floor(N / 2) + 1))
-
+eegpow = util.power(fft(eegdata))
+hz = util.freqvec(0.5 * srate, N)
 
 # %%
 # "manual" Welch's method
@@ -137,16 +146,16 @@ hz = np.linspace(0, srate / 2, int(np.floor(N / 2) + 1))
 winlength = int(1 * srate)
 
 # number of points of overlap
-nOverlap = np.round(srate / 2)
+nOverlap = np.round(0.5 * srate)
 
 # window onset times
 winonsets = np.arange(0, int(N - winlength), int(winlength - nOverlap))
 
 # note: different-length signal needs a different-length Hz vector
-hzW = np.linspace(0, srate / 2, int(np.floor(winlength / 2) + 1))
+hzW = util.freqvec(0.5 * srate, winlength)
 
 # Hann window
-hannw = .5 - np.cos(2 * np.pi * np.linspace(0, 1, int(winlength))) / 2
+hannw = util.hann_window(winlength)
 
 # initialize the power matrix (windows x frequencies)
 eegpowW = np.zeros(len(hzW))
@@ -156,12 +165,13 @@ for wi in range(0, len(winonsets)):
 
     # get a chunk of data from this time window
     datachunk = eegdata[winonsets[wi]:winonsets[wi] + winlength]
+    assert len(datachunk) == winlength
 
     # apply Hann taper to data
     datachunk = datachunk * hannw
 
     # compute its power
-    tmppow = np.abs(scipy.fftpack.fft(datachunk) / winlength)**2
+    tmppow = util.power(fft(datachunk))
 
     # enter into matrix
     eegpowW = eegpowW + tmppow[0:len(hzW)]
@@ -171,20 +181,19 @@ eegpowW = eegpowW / len(winonsets)
 
 
 # plotting
+plt.subplot(1, 3, 2)
 plt.plot(hz, eegpow[0:len(hz)], 'k', label='Static FFT')
 plt.plot(hzW, eegpowW / 10, 'r', label='Welch''s method')
 plt.xlim([0, 40])
 plt.xlabel('Frequency (Hz)')
 plt.legend()
-plt.show()
-
 
 # %%
 # Python's welch
 
 # create Hann window
 winsize = int(2 * srate)  # 2-second window
-hannw = .5 - np.cos(2 * np.pi * np.linspace(0, 1, int(winsize))) / 2
+hannw = util.hann_window(winsize)
 
 # number of FFT points (frequency resolution)
 nfft = srate * 100
@@ -192,12 +201,13 @@ nfft = srate * 100
 f, welchpow = welch(eegdata, fs=srate, window=hannw,
                     nperseg=winsize, noverlap=winsize / 4, nfft=nfft)
 
+plt.subplot(1, 3, 3)
 plt.semilogy(f, welchpow)
 plt.xlim([0, 40])
 plt.xlabel('frequency [Hz]')
 plt.ylabel('Power')
-plt.show()
 
+plt.show()
 
 # %% [markdown]
 #
@@ -220,22 +230,24 @@ Audio(bc[:, 0], rate=fs)
 n = len(bc)
 timevec = np.arange(0, n) / fs
 
+plt.figure("Birdcall")
+
 # plot the data from the two channels
+plt.subplot(2, 2, 1)
 plt.plot(timevec, bc)
 plt.xlabel('Time (sec.)')
 plt.title('Time domain')
-plt.show()
 
 # compute the power spectrum
-hz = np.linspace(0, fs / 2, int(np.floor(n / 2) + 1))
-bcpow = np.abs(fft(detrend(bc[:, 0])) / n)**2
+hz = util.freqvec(0.5 * fs, n)
+bcpow = util.power(fft(detrend(bc[:, 0])))
 
 # now plot it
+plt.subplot(2, 2, 3)
 plt.plot(hz, bcpow[0:len(hz)])
 plt.xlabel('Frequency (Hz)')
 plt.title('Frequency domain')
 plt.xlim([0, 8000])
-plt.show()
 
 
 # %%
@@ -243,6 +255,7 @@ plt.show()
 
 frex, time, pwr = spectrogram(bc[:, 0], fs)
 
+plt.subplot(2, 2, (2, 4))
 plt.pcolormesh(time, frex, pwr, vmin=0, vmax=9)
 plt.xlabel('Time (s)'), plt.ylabel('Frequency (Hz)')
 plt.show()
