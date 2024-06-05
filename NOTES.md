@@ -65,16 +65,16 @@
 * Linear extrapolation is more conservative and stable
 * Spectral interpolation: fft a window before and after the data hole, average the spectra, ifft and **detrend** because we are adding an artificial trend line to "stitch" to the original signal. This is more a "speculative" reconstruction of the data
 
-# 9. Outlier detection
+# 9. Outlier detection 3h
 * A threshold based on mean and standard deviation is good for detecting outlier
 * If the signal has a trend, either detrend and apply a global threshold or apply a local threshold by computing mean and std in moving windows
 * Local std threshold is good for outlier points, not so for outlier windows
 * RMS is good for identifying window, but again a threshold must be selected for the resulting RMS signal; this can be done visually or again applying local thresholds
 * **check difference between mean and RMS**
 
-# 10. Feature detection
+# 10. Feature detection 3h
 
-# 11. Variability
+# 11. Variability 2h
 
 # 12. Bonus
 
@@ -93,11 +93,14 @@
 * https://it.mathworks.com/help/signal/filter-design.html
 * https://dsp.stackexchange.com/questions/71278/can-fft-convolution-be-faster-than-direct-convolution-for-signals-of-large-sizes
 * https://www.biorxiv.org/node/120256.full
+* https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7517156/
 
 ## Video
-* https://www.youtube.com/watch?v=Ls7AvuZG4kI
-* https://www.youtube.com/watch?v=T647CGsuOVU
-* https://www.youtube.com/watch?v=7ahrcB5HL0k
+* https://www.youtube.com/watch?v=Ls7AvuZG4kI   (Accurately recovering data units in FFT and convolution)
+* https://www.youtube.com/watch?v=T647CGsuOVU   (Imaginary Numbers Are Real)
+* https://www.youtube.com/watch?v=7ahrcB5HL0k   (Morlet wavelets in time and in frequency)
+* https://www.youtube.com/watch?v=v68zYyaEmEA   (entropy, wordle)
+* https://www.youtube.com/watch?v=TLgZit1HTxA   (Why do trig functions appear in Euler's formula?)
 
 ## Code 
 * https://github.com/swharden/FftSharp/tree/main
