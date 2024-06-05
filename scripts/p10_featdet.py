@@ -264,7 +264,7 @@ plt.show()
 
 
 # find local minima
-thresh_ts = copy.deepcopy(convres)
+thresh_ts = convres.copy()
 thresh_ts[thresh_ts > thresh] = 0
 
 
